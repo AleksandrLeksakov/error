@@ -13,7 +13,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
         super.onCreate(savedInstanceState)
 
         intent?.let {
-            if (it.action != Intent.ACTION_SEND) {
+           if (it.action != Intent.ACTION_SEND) {
                 return@let
             }
 
@@ -22,7 +22,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 return@let
             }
             intent.removeExtra(Intent.EXTRA_TEXT)
-            findNavController(R.id.newPostFragment).navigate(
+            findNavController(R.id.fragment_container).navigate(
                 R.id.action_feedFragment_to_newPostFragment,
                 Bundle().apply {
                     textArg = text
