@@ -1,5 +1,4 @@
 
-
 package ru.netology.nmedia.util
 
 import android.content.Context

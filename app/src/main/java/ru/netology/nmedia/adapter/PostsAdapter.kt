@@ -18,6 +18,7 @@ interface OnInteractionListener {
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
     fun onPlayVideo(post: Post) {}
+    fun onView(post: Post) {}
 }
 
 
@@ -80,11 +81,16 @@ class PostViewHolder(
                 onInteractionListener.onShare(post)
             }
 
+            root.setOnClickListener {
+                onInteractionListener.onView(post)
+            }
+
             imageViewVideo.visibility =
                 if (post.videoUrl.isNullOrEmpty()) View.GONE else View.VISIBLE
             imageViewVideo.setOnClickListener {
                 onInteractionListener.onPlayVideo(post)
             }
+
         }
     }
 
