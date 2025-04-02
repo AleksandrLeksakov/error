@@ -64,7 +64,7 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, "Share post")
                 startActivity(shareIntent)
             }
-
+//нет клика на пост
             override fun onView(post: Post) {
                 findNavController().navigate(R.id.action_feedFragment_to_onePostFragment, Bundle().apply { idArg = post.id })
             }
