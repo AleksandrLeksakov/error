@@ -15,6 +15,7 @@ import ru.netology.nmedia.databinding.FragmentOnePostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.LongArg
 import ru.netology.nmedia.viewmodel.PostViewModel
+import java.security.cert.Extension
 
 class OnePostFragment : Fragment() {
 
@@ -30,6 +31,7 @@ class OnePostFragment : Fragment() {
         val binding = FragmentOnePostBinding.inflate(inflater, container, false)
         val id = arguments?.idArg ?: -1
         val holder = PostViewHolder(binding.post, object : OnInteractionListener {
+
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
                 val text = post.content

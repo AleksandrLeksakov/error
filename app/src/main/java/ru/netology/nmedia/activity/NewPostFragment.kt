@@ -18,10 +18,6 @@ class NewPostFragment : Fragment() {
         var Bundle.textArg: String? by StringArg
     }
 
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,6 +28,11 @@ class NewPostFragment : Fragment() {
             container,
             false
         )
+
+        val viewModel: PostViewModel by viewModels(
+            ownerProducer = ::requireParentFragment
+        )
+
 
         arguments?.textArg
             ?.let(binding.edit::setText)
