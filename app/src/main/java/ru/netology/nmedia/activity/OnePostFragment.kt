@@ -37,7 +37,7 @@ class OnePostFragment : Fragment() {
                 val text = post.content
                 val bundle = Bundle()
                 bundle.putString("editedText", text)
-                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment, bundle)
+                findNavController().navigate(R.id.newPostFragment, bundle)
 
             }
 
@@ -47,7 +47,9 @@ class OnePostFragment : Fragment() {
 
             override fun onRemove(post: Post) {
                 viewModel.removeById(post.id)
+                findNavController().popBackStack()
             }
+
 
             override fun onShare(post: Post) {
                 viewModel.shareById(post.id)
