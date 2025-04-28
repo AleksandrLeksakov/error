@@ -1,6 +1,5 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.fragment
 
-import android.R.attr.action
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,12 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.OnePostFragment.Companion.idArg
+import ru.netology.nmedia.fragment.OnePostFragment.Companion.idArg
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
+import kotlin.apply
 
 class FeedFragment : Fragment() {
 
@@ -40,8 +40,9 @@ class FeedFragment : Fragment() {
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
                 val text = post.content
-                val bundle = Bundle()
-                bundle.putString("editedText", text)
+                val bundle = Bundle().apply {
+                    putString("content", text)
+                }
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment, bundle)
 
             }
@@ -68,7 +69,9 @@ class FeedFragment : Fragment() {
             }
 
             override fun onView(post: Post) {
-                findNavController().navigate(R.id.action_feedFragment_to_onePostFragment, Bundle().apply { idArg = post.id })
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_onePostFragment,
+                    Bundle().apply { idArg = post.id })
             }
         })
         binding.list.adapter = adapter

@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,9 +13,12 @@ import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostViewHolder
 import ru.netology.nmedia.databinding.FragmentOnePostBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.fragment.OnePostFragment.Companion.idArg
 import ru.netology.nmedia.util.LongArg
 import ru.netology.nmedia.viewmodel.PostViewModel
-import java.security.cert.Extension
+import kotlin.apply
+import kotlin.collections.find
+import kotlin.let
 
 class OnePostFragment : Fragment() {
 
@@ -35,8 +38,9 @@ class OnePostFragment : Fragment() {
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
                 val text = post.content
-                val bundle = Bundle()
-                bundle.putString("editedText", text)
+                val bundle = Bundle().apply {
+                    putString("content", text)
+                }
                 findNavController().navigate(R.id.newPostFragment, bundle)
 
             }

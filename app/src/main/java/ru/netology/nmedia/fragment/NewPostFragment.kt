@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,9 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.fragment.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
+import kotlin.let
+import kotlin.toString
 
 class NewPostFragment : Fragment() {
 
@@ -34,8 +37,10 @@ class NewPostFragment : Fragment() {
         )
 
 
-        arguments?.textArg
-            ?.let(binding.edit::setText)
+        arguments?.getString("content")
+            ?.let {
+                content -> binding.edit.setText(content)
+            }
 
         binding.cancelButton.setOnClickListener {
             findNavController().navigateUp()

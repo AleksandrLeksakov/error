@@ -5,7 +5,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
+import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.fragment.NewPostFragment.Companion.textArg
 
 class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
@@ -29,5 +30,6 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 }
             )
         }
+        println(PostEntity(1,"", "", "", false, 0, false, 0))
     }
 }
