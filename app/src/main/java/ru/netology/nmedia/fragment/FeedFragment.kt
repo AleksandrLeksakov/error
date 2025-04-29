@@ -47,6 +47,7 @@ class FeedFragment : Fragment() {
 
             }
 
+
             override fun onLike(post: Post) {
                 viewModel.likeById(post.id)
             }
@@ -67,6 +68,7 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, "Share post")
                 startActivity(shareIntent)
             }
+
 
             override fun onView(post: Post) {
                 findNavController().navigate(
