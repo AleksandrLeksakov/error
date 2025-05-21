@@ -10,6 +10,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.fragment.NewPostFragment.Companion.textArg
 import android.Manifest
 import android.content.pm.PackageManager
+import ru.netology.nmedia.entity.PostEntity
 
 class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
@@ -35,7 +36,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 }
             )
         }
-      //  println(PostEntity(1,"", "", "", false, 0, false, 0))
+     //   println(PostEntity(1,"", "", "", false, 0, false, 0))
     }
 
     private fun requestNotificationsPermission() {

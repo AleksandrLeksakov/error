@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     id 'com.android.application' version '8.6.1' apply false
@@ -6,6 +8,8 @@ plugins {
     id 'org.jetbrains.kotlin.kapt' version '2.1.20' apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
 }
+
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir
