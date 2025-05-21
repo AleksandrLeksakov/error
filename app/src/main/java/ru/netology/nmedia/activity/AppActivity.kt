@@ -38,7 +38,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
         }
      //   println(PostEntity(1,"", "", "", false, 0, false, 0))
     }
-
+// запрос разрешения на пуш
     private fun requestNotificationsPermission() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return
