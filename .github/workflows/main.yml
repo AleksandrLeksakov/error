@@ -35,13 +35,7 @@ jobs:
           ./gradlew assembleDebug --stacktrace --no-daemon || exit 0
           ./gradlew --stop
 
-      - name: Verify APK
-        run: |
-          ls -la app/build/outputs/apk/debug/
-          if [ ! -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
-            echo "::warning::APK file not found in expected location"
-            find . -name "*.apk" -exec echo "Found APK: {}" \;
-          fi
+
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
