@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -18,19 +18,38 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-       - name: Decode google-services.json
-  env:
-    FIREBASE_SECRET: ${{ secrets.FIREBASE_SECRET }}
-  run: echo $FIREBASE_SECRET > ./app/google-services.json
+      - name: Setup google-services.json
+        env:
+          FIREBASE_CONFIG: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          mkdir -p ./app
+          echo "$FIREBASE_CONFIG" > ./app/google-services.json
+          # Проверяем что файл создан
+          ls -la ./app/google-services.json
+
+      - name: Validate google-services.json
+        run: |
+          if [ ! -f "./app/google-services.json" ]; then
+            echo "::error::google-services.json not found!"
+            exit 1
+          fi
+          # Простая проверка валидности JSON
+          if ! jq empty ./app/google-services.json; then
+            echo "::error::Invalid JSON in google-services.json"
+            exit 1
+          fi
 
       - name: Make gradlew executable
-        run: chmod +x ./gradlew #
+        run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --stacktrace --info
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: my-build-artifact
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: app-debug-build
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/mapping/debug/mapping.txt
+          retention-days: 5
