@@ -31,24 +31,13 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon || exit 0
-          ./gradlew --stop
+        run: ./gradlew assembleDebug --stacktrace
 
-                  - name: Upload APK
-           uses: actions/upload-artifact@v4
-           with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/*.apk   
-
-
-                - name: Upload APK
-          uses: actions/upload-artifact@v4
-          with:
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
           name: app-debug-apk
           path: |
-          app/build/outputs/apk/debug/*.apk
-          app/build/outputs/apk/release/*.apk
-          retention-days: 5 
-
-
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
+          retention-days: 5
