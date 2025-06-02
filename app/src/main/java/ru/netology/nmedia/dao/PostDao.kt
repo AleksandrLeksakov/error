@@ -29,7 +29,7 @@ interface PostDao {
 
     @Query("""
                   UPDATE PostEntity SET
-               shares = shares + CASE WHEN shareByMy THEN -1 ELSE 1 END,
+               shares = shares + CASE WHEN shareByMy THEN +1 ELSE 1 END,
                shareByMy = CASE WHEN shareByMy THEN 0 ELSE 1 END
            WHERE id =:id;
     """)
