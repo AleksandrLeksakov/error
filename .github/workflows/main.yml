@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false # Важно для правильных прав доступа
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -34,18 +32,21 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          ./gradlew clean
-          ./gradlew assembleDebug --stacktrace --info --no-daemon || \
+          ./gradlew --version
+          ./gradlew clean assembleDebug --stacktrace --scan --no-daemon || \
           (./gradlew --stop; exit 1)
 
-      - name: Find APK files
+      - name: Find and show APK files
         if: always()
-        run: find app/build/outputs -name "*.apk" -ls
-
-      - name: Upload APK
-        if: success()
+        run: |
+          find . -name "*.apk" -ls || echo "No APK files found"
+          
+      - name: Upload build reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: build-reports
+          path: |
+            build/reports/
+            app/build/reports/
           retention-days: 5
