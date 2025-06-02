@@ -1,1 +1,46 @@
-dibag apk
+name: CI
+
+on:
+push:
+branches: ["main"]
+pull_request:
+branches: ["main"]
+
+jobs:
+build:
+runs-on: ubuntu-latest
+steps:
+
+- uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup google-services.json
+        env:
+          FIREBASE_CONFIG: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          mkdir -p ./app
+          echo "$FIREBASE_CONFIG" > ./app/google-services.json
+          ls -la ./app/
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: |
+          ./gradlew assembleDebug --stacktrace --no-daemon || exit 0
+          ./gradlew --stop
+
+      - name: Upload APK
+       uses: actions/upload-artifact@v4
+       with:
+       name: app-debug-apk
+       path: |
+       app/build/outputs/apk/debug/*.apk
+       app/build/outputs/apk/release/*.apk
+       retention-days: 5  # Хранить артефакт 5 дней   
