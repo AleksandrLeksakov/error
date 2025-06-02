@@ -25,18 +25,17 @@ jobs:
         run: |
           mkdir -p ./app
           echo "$FIREBASE_CONFIG" > ./app/google-services.json
-          ls -la ./app/
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+          jq . ./app/google-services.json || (echo "Invalid JSON"; exit 1)
 
       - name: Build with Gradle
         run: |
           ./gradlew clean
-          ./gradlew assembleDebug --stacktrace --info || (./gradlew --stop; exit 1)
+          ./gradlew assembleDebug --stacktrace --info --no-daemon || \
+          (./gradlew --stop; exit 1)
 
-      - name: List build outputs
-        run: find app/build/outputs -type f
+      - name: Find APK files
+        if: always()
+        run: find app/build/outputs -name "*.apk" -ls
 
       - name: Upload APK
         if: success()
