@@ -19,29 +19,34 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       - name: Setup google-services.json
         env:
           FIREBASE_CONFIG: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
           mkdir -p ./app
           echo "$FIREBASE_CONFIG" > ./app/google-services.json
-          ls -la ./app/
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+          jq . ./app/google-services.json || (echo "Invalid JSON"; exit 1)
 
       - name: Build with Gradle
         run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon || exit 0
-          ./gradlew --stop
+          ./gradlew --version
+          ./gradlew clean assembleDebug --stacktrace --scan --no-daemon || \
+          (./gradlew --stop; exit 1)
 
-
-
-      - name: Upload artifacts
+      - name: Find and show APK files
+        if: always()
+        run: |
+          find . -name "*.apk" -ls || echo "No APK files found"
+          
+      - name: Upload build reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-output
+          name: build-reports
           path: |
-            app/build/outputs/apk/**/*.apk
-            app/build/reports/**/*
-          retention-days: 2
+            build/reports/
+            app/build/reports/
+          retention-days: 5
