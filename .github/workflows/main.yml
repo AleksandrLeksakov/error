@@ -31,13 +31,17 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ./gradlew assembleDebug --stacktrace
+        run: |
+          ./gradlew clean
+          ./gradlew assembleDebug --stacktrace --info || (./gradlew --stop; exit 1)
+
+      - name: List build outputs
+        run: find app/build/outputs -type f
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           retention-days: 5
