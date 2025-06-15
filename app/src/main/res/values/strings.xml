@@ -21,4 +21,10 @@
     <string name="channel_remote_name">Server notifications</string>
     <string name="channel_remote_description">Notifications from remote server</string>
     <string name="notification_new_post">Notification_new_post</string>
+    <string name="network_error">Network error</string>
+    <string name="error_loading">error_loading</string>
+    <string name="retry_loading">retry_loading</string>
+    <string name="empty_posts">empty_posts</string>
+    <string name="unknown_error">unknown_error</string>
+
 </resources>

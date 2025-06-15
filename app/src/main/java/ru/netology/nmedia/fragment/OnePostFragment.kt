@@ -68,11 +68,7 @@ class OnePostFragment : Fragment() {
                 startActivity(shareIntent)
             }
         })
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            val post = posts.find { it.id == id }
-            post?.let { holder.bind(it)
-            }
-        }
+        viewModel.data.observe(viewLifecycleOwner) {    }
         return binding.root
     }
 

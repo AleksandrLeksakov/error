@@ -2,11 +2,10 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
-import ru.netology.nmedia.db.AppDb
+import ru.netology.nmedia.model.FeedModel
+import ru.netology.nmedia.repository.*
+import kotlin.concurrent.thread
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.repository.PostRepository
-
-import ru.netology.nmedia.repository.PostRepositoryRoomImpl
 
 private val empty = Post(
     id = 0,
@@ -20,13 +19,32 @@ private val empty = Post(
     videoUrl = null
 )
 
-class PostViewModel(application: Application): AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryRoomImpl(
-        AppDb.getInstance(application).postDao()
+class PostViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository: PostRepository = PostRepositoryImpl()
+    private val _data = MutableLiveData(FeedModel())
+    val data: LiveData<FeedModel>
+        get() = _data
 
-    )
-    val data: LiveData<List<Post>> = repository.getAll()
     val edited = MutableLiveData(empty)
+
+    init {
+        load()
+    }
+
+    fun load() {
+        thread {
+            // Начинаем загрузку
+            _data.postValue(FeedModel(loading = true))
+            try {
+                // Данные успешно получены
+                val posts = repository.getAll()
+                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty())) //  <-- Исправлено
+            } catch (e: Exception) {
+                // Получена ошибка
+                _data.postValue(FeedModel(error = true)) //  <-- Исправлено
+            }
+        }
+    }
 
     fun save() {
         edited.value?.let {
@@ -51,21 +69,7 @@ class PostViewModel(application: Application): AndroidViewModel(application) {
         edited.value = edited.value?.copy(content = text)
     }
 
-    fun changeVideoUrl(videoUrl: String) {
-        val url = videoUrl.trim()
-        if (edited.value?.videoUrl == url) {
-            return
-        }
-        edited.value = edited.value?.copy(videoUrl = url)
-    }
-
     fun likeById(id: Long) = repository.likeById(id)
     fun removeById(id: Long) = repository.removeById(id)
     fun shareById(id: Long) = repository.shareById(id)
-
-    fun changeContentAndSave(postId: Long, newContent: String, newVideoUrl: String?) {
-        val post = data.value?.find { it.id == postId } ?: return
-        edit(post.copy(content = newContent, videoUrl = newVideoUrl))
-        save()
-    }
 }

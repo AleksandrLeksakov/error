@@ -19,5 +19,9 @@
     <string name="channel_remote_name">Уведомления с сервера</string>
     <string name="channel_remote_description">Уведомления с удалённого сервера</string>
     <string name="notification_new_post">Опубликовал новый пост</string>
+    <string name="network_error">ошибка сети</string>
+    <string name="error_loading">ошибка при загрузке</string>
+    <string name="retry_loading">повторная загрузка</string>
+    <string name="empty_posts">постов нет</string>
 
 </resources>
