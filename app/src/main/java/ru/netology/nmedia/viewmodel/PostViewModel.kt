@@ -41,7 +41,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty())) //  <-- Исправлено
             } catch (e: Exception) {
                 // Получена ошибка
-                _data.postValue(FeedModel(error = true)) //  <-- Исправлено
+                _data.postValue(FeedModel(error = e)) //  <-- Исправлено
             }
         }
     }

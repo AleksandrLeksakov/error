@@ -82,7 +82,8 @@ class FeedFragment : Fragment() {
             adapter.submitList(state.posts)
 
             binding.errorGroup.isVisible = state.isError
-            binding.progress.isVisible = state.loading
+            binding.errorText.text = state.errorTuString(requireContext())
+            binding.loading.isVisible = state.loading
             binding.emptyText.isVisible = state.empty
         }
 

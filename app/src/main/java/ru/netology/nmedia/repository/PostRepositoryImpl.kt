@@ -1,6 +1,5 @@
 package ru.netology.nmedia.repository
 
-import android.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.MediaType.Companion.toMediaType
@@ -40,7 +39,7 @@ class PostRepositoryImpl: PostRepository {
         // TODO: do this in homework
     }
 
-    override fun save(post: Post): Post {
+    override fun save(post: Post) {
         val request: Request = Request.Builder()
             .post(gson.toJson(post).toRequestBody(jsonType))
             .url("${BASE_URL}/api/slow/posts")
@@ -49,8 +48,8 @@ class PostRepositoryImpl: PostRepository {
         client.newCall(request)
             .execute()
             .close()
-
     }
+
 
     override fun removeById(id: Long) {
         val request: Request = Request.Builder()
