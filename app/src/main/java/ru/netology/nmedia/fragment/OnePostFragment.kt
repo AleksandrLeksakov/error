@@ -36,7 +36,7 @@ class OnePostFragment : Fragment() {
         val holder = PostViewHolder(binding.post, object : OnInteractionListener {
 
             override fun onEdit(post: Post) {
-                viewModel.edit(post)
+                viewModel.editPost(post)
                 val text = post.content
                 val bundle = Bundle().apply {
                     putString("content", text)

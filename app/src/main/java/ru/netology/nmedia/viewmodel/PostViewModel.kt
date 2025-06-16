@@ -3,7 +3,8 @@ package ru.netology.nmedia.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import ru.netology.nmedia.model.FeedModel
-import ru.netology.nmedia.repository.*
+import ru.netology.nmedia.repository.PostRepository
+import ru.netology.nmedia.repository.PostRepositoryImpl
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.dto.Post
 
@@ -25,61 +26,94 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val data: LiveData<FeedModel>
         get() = _data
 
-    val edited = MutableLiveData(empty)
+    private val _edited = MutableLiveData(empty)
+    val edited: LiveData<Post>
+        get() = _edited
 
     init {
-        load()
+        loadPosts()
     }
 
-    fun load() {
+    fun loadPosts() {
         viewModelScope.launch {
-            _data.postValue(FeedModel(loading = true))
+            _data.value = _data.value?.copy(loading = true)
             try {
                 val posts = repository.getAll()
-                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
+                _data.value = FeedModel(posts = posts, empty = posts.isEmpty())
             } catch (e: Exception) {
-                _data.postValue(FeedModel(error = e))
+                _data.value = _data.value?.copy(error = e) ?: FeedModel(error = e)
             }
         }
     }
 
-    fun save() {
-        edited.value?.let { post ->
+    fun savePost() {
+        _edited.value?.let { post ->
             viewModelScope.launch {
                 try {
                     repository.save(post)
-                    load() // Обновляем данные после сохранения
+                    _edited.value = empty
+                    loadPosts()
                 } catch (e: Exception) {
-                    _data.postValue(FeedModel(error = e))
+                    _data.value = _data.value?.copy(error = e) ?: FeedModel(error = e)
                 }
             }
         }
-        edited.value = empty
     }
 
-    fun edit(post: Post) {
-        edited.value = post
+    fun editPost(post: Post) {
+        _edited.value = post
     }
 
     fun cancelEdit() {
-        edited.value = empty
+        _edited.value = empty
     }
 
     fun changeContent(content: String) {
         val text = content.trim()
-        if (edited.value?.content == text) {
-            return
-        }
-        edited.value = edited.value?.copy(content = text)
+        if (_edited.value?.content == text) return
+        _edited.value = _edited.value?.copy(content = text)
     }
 
     fun likeById(id: Long) {
         viewModelScope.launch {
             try {
-                repository.likeById(id)
-                load()
+                // 1. Получаем текущий список постов
+                val currentPosts = _data.value?.posts ?: return@launch
+
+                // 2. Находим нужный пост
+                val post = currentPosts.find { it.id == id } ?: return@launch
+                val wasLiked = post.likedByMe
+
+                // 3. Оптимистичное обновление UI
+                _data.value = _data.value?.copy(
+                    posts = currentPosts.map {
+                        if (it.id == id) {
+                            it.copy(
+                                likedByMe = !wasLiked,
+                                likes = if (wasLiked) it.likes - 1 else it.likes + 1
+                            )
+                        } else it
+                    }
+                )
+
+                // 4. Реальный запрос к серверу
+                val updatedPost = if (wasLiked) {
+                    repository.unlikeById(id)
+                } else {
+                    repository.likeById(id)
+                }
+
+                // 5. Обновляем данные с сервера (на случай, если другие данные изменились)
+                _data.value = _data.value?.copy(
+                    posts = _data.value?.posts?.map {
+                        if (it.id == updatedPost.id) updatedPost else it
+                    } ?: emptyList()
+                )
+                loadPosts()
             } catch (e: Exception) {
-                _data.postValue(FeedModel(error = e))
+                // 6. В случае ошибки - показываем ошибку и перезагружаем данные
+                _data.value = _data.value?.copy(error = e)
+                loadPosts()
             }
         }
     }
@@ -87,10 +121,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun removeById(id: Long) {
         viewModelScope.launch {
             try {
+                // Оптимистичное удаление
+                _data.value?.posts?.let { currentPosts ->
+                    _data.value = _data.value?.copy(
+                        posts = currentPosts.filter { it.id != id }
+                    )
+                }
                 repository.removeById(id)
-                load()
             } catch (e: Exception) {
-                _data.postValue(FeedModel(error = e))
+                _data.value = _data.value?.copy(error = e) ?: FeedModel(error = e)
+                loadPosts()
             }
         }
     }
@@ -99,9 +139,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 repository.shareById(id)
-                load()
+                loadPosts()
             } catch (e: Exception) {
-                _data.postValue(FeedModel(error = e))
+                _data.value = _data.value?.copy(error = e) ?: FeedModel(error = e)
             }
         }
     }

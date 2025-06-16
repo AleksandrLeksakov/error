@@ -45,10 +45,10 @@ class PostRepositoryImpl : PostRepository {
             }
     }
 
-    override suspend fun likeById(id: Long) = withContext(Dispatchers.IO) {
+    override suspend fun likeById(id: Long): Post = withContext(Dispatchers.IO) {
         val request = Request.Builder()
-            .post("".toRequestBody(jsonType)) // Empty body for like request
-            .url("${BASE_URL}/api/slow/posts/$id/likes")
+            .post("".toRequestBody(jsonType))
+            .url("${BASE_URL}/api/posts/$id/likes")  // Уберите /slow/ для нормальной работы
             .build()
 
         client.newCall(request)
@@ -57,6 +57,27 @@ class PostRepositoryImpl : PostRepository {
                 if (!response.isSuccessful) {
                     throw RuntimeException("Failed to like post: ${response.code}")
                 }
+
+                val body = response.body?.string() ?: throw RuntimeException("Empty response")
+                gson.fromJson(body, Post::class.java)  // Сервер должен возвращать ОБНОВЛЁННЫЙ пост
+            }
+    }
+
+    override suspend fun unlikeById(id: Long): Post = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .delete()
+            .url("${BASE_URL}/api/posts/$id/likes")  // Уберите /slow/ для нормальной работы
+            .build()
+
+        client.newCall(request)
+            .execute()
+            .use { response ->
+                if (!response.isSuccessful) {
+                    throw RuntimeException("Failed to unlike post: ${response.code}")
+                }
+
+                val body = response.body?.string() ?: throw RuntimeException("Empty response")
+                gson.fromJson(body, Post::class.java)  // Сервер должен возвращать ОБНОВЛЁННЫЙ пост
             }
     }
 
