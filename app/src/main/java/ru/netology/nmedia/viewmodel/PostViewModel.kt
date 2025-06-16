@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
-import kotlin.concurrent.thread
+import kotlinx.coroutines.launch
 import ru.netology.nmedia.dto.Post
 
 private val empty = Post(
@@ -32,23 +32,27 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun load() {
-        thread {
-            // Начинаем загрузку
+        viewModelScope.launch {
             _data.postValue(FeedModel(loading = true))
             try {
-                // Данные успешно получены
                 val posts = repository.getAll()
-                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty())) //  <-- Исправлено
+                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
             } catch (e: Exception) {
-                // Получена ошибка
-                _data.postValue(FeedModel(error = e)) //  <-- Исправлено
+                _data.postValue(FeedModel(error = e))
             }
         }
     }
 
     fun save() {
-        edited.value?.let {
-            repository.save(it)
+        edited.value?.let { post ->
+            viewModelScope.launch {
+                try {
+                    repository.save(post)
+                    load() // Обновляем данные после сохранения
+                } catch (e: Exception) {
+                    _data.postValue(FeedModel(error = e))
+                }
+            }
         }
         edited.value = empty
     }
@@ -69,7 +73,36 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = edited.value?.copy(content = text)
     }
 
-    fun likeById(id: Long) = repository.likeById(id)
-    fun removeById(id: Long) = repository.removeById(id)
-    fun shareById(id: Long) = repository.shareById(id)
+    fun likeById(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.likeById(id)
+                load()
+            } catch (e: Exception) {
+                _data.postValue(FeedModel(error = e))
+            }
+        }
+    }
+
+    fun removeById(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.removeById(id)
+                load()
+            } catch (e: Exception) {
+                _data.postValue(FeedModel(error = e))
+            }
+        }
+    }
+
+    fun shareById(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.shareById(id)
+                load()
+            } catch (e: Exception) {
+                _data.postValue(FeedModel(error = e))
+            }
+        }
+    }
 }
