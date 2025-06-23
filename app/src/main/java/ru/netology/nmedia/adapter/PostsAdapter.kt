@@ -7,9 +7,11 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
+import java.lang.invoke.VarHandle.AccessMode.GET
 import java.util.Locale
 
 interface OnInteractionListener {
@@ -43,14 +45,28 @@ class PostViewHolder(
 
     fun bind(post: Post) {
         binding.apply {
+            //Текстовый контент
             author.text = post.author
             published.text = post.published
             content.text = post.content
+            // Кнопки лайков и шаринга
             share.isChecked = post.shareById
             share.text = "${post.shares.formatCount()}"
-
             like.isChecked = post.likedByMe
             like.text = "${post.likes.formatCount()}"
+
+
+            // Загрузка аватарки
+            post.authorAvatar?.let { avatarUrl ->
+                val fullAvatarUrl = "http://10.0.2.2:9999/avatars/$avatarUrl"
+
+                Glide.with(avatar.context)
+                    .load(fullAvatarUrl)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_avatar_placeholder)
+                    .error(R.drawable.ic_avatar_error)
+                    .into(avatar)
+            } ?: avatar.setImageResource(R.drawable.ic_avatar_default)
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
@@ -73,6 +89,7 @@ class PostViewHolder(
                 }.show()
             }
 
+
             like.setOnClickListener {
                 onInteractionListener.onLike(post)
             }
@@ -94,6 +111,7 @@ class PostViewHolder(
         }
     }
 
+
     private fun Int.formatCount(): String {
         return when {
             this < 1000 -> this.toString()
@@ -113,3 +131,7 @@ class PostViewHolder(
         }
     }
 }
+
+
+
+

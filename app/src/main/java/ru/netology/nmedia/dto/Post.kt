@@ -11,5 +11,6 @@ data class Post(
     val likes: Int,
     val shareById: Boolean,
     var shares: Int,
+    val authorAvatar: String? = null,
     val videoUrl: String? = null // необязательное поле для ссылки на YouTube
 )
