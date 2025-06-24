@@ -63,10 +63,10 @@ class PostViewHolder(
                 Glide.with(avatar.context)
                     .load(fullAvatarUrl)
                     .circleCrop()
-                    .placeholder(R.drawable.ic_avatar_placeholder)
-                    .error(R.drawable.ic_avatar_error)
+                    .placeholder(R.drawable.ic_loading_100dp)
+                    .error(R.drawable.ic_error_100dp)
                     .into(avatar)
-            } ?: avatar.setImageResource(R.drawable.ic_avatar_default)
+            } ?: avatar.setImageResource(R.drawable.ic_launcher_background)
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
