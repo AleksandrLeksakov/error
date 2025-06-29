@@ -1,11 +1,10 @@
 package ru.netology.nmedia.repository
 
-import com.google.gson.Gson
-
-import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.dto.Post
-import java.io.IOException
 
 
 class PostRepositoryImpl : PostRepository {
@@ -15,19 +14,44 @@ class PostRepositoryImpl : PostRepository {
 
         return ApiService.service.getAll()
             .execute()
-            .let { it.body() ?: throw RuntimeException("body is null") }.body().orEmpty()
+            .let { it.body() ?: throw RuntimeException("body is null") }
             }
+
+    override fun getAllAsync(callback: PostRepository.GetAllCallback) {
+        ApiService.service.getAll()
+            .execute()
+        object : Callback<List<Post>> {
+            override fun onResponse(
+                call: Call<List<Post>>,
+                response: Response<List<Post>?>
+            ) {
+                val body = response.body() ?: run {
+                    callback.onError(RuntimeException("body is null"))
+                }
+            }
+
+            override fun onFailure(
+                call: Call<List<Post>>,
+                throwable: Throwable
+            ) {
+                callback.onError(throwable)
+            }
+
+        }
+    }
 
     override suspend fun likeById(id: Long): Post {
         TODO("Not yet implemented")
     }
 
     override suspend fun save(post: Post) {
-        TODO("Not yet implemented")
+        ApiService.service.save(post)
+            .execute()
     }
 
     override suspend fun removeById(id: Long) {
-        TODO("Not yet implemented")
+        ApiService.service.deleteById(id)
+            .execute()
     }
 
     override suspend fun shareById(id: Long) {
@@ -37,5 +61,7 @@ class PostRepositoryImpl : PostRepository {
     override suspend fun unlikeById(id: Long): Post {
         TODO("Not yet implemented")
     }
+
+
 }
 
