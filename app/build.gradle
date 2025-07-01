@@ -21,6 +21,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        buildConfig true
         //
         //  dataBinding true
     }
@@ -30,9 +31,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders.usesCleartextTraffic = false
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:9999/api/slow/\"")
         }
         debug {
             manifestPlaceholders.usesCleartextTraffic = true
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:9999/api/slow/\"")
         }
     }
     compileOptions {
@@ -85,6 +88,7 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttplogging_version"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitgson_version"
+
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation(platform("com.google.firebase:firebase-bom:$firebase_version"))

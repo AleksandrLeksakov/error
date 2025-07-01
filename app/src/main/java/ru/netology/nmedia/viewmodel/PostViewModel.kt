@@ -36,12 +36,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadPosts() {
         viewModelScope.launch {
-            _data.value = _data.value?.copy(loading = true)
+            _data.value = FeedModel(loading = true)
             try {
                 val posts = repository.getAll()
                 _data.value = FeedModel(posts = posts, empty = posts.isEmpty())
             } catch (e: Exception) {
-                _data.value = _data.value?.copy(error = e) ?: FeedModel(error = e)
+                _data.value = FeedModel(error = e)
             }
         }
     }
