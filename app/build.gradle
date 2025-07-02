@@ -44,8 +44,8 @@ android {
     // Настройки компиляции Java
     compileOptions {
         coreLibraryDesugaringEnabled true  // Включение десахаризации для использования новых API на старых устройствах
-        sourceCompatibility JavaVersion.VERSION_21  // Совместимость исходного кода с Java 17
-        targetCompatibility JavaVersion.VERSION_21  // Целевая совместимость с Java 17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     // Настройки Kotlin
@@ -57,6 +57,8 @@ android {
 
 // Зависимости проекта
 dependencies {
+    implementation 'com.google.firebase:firebase-appdistribution-gradle:5.1.1'
+
     // Определение версий зависимостей
     def core_version = "1.16.0"
     def appcompat_version = "1.7.1"
@@ -105,6 +107,10 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttplogging_version"  // Логирование сетевых запросов
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"  // Retrofit - HTTP-клиент
     implementation "com.squareup.retrofit2:converter-gson:$retrofitgson_version"  // Конвертер Gson для Retrofit
+
+    implementation("com.squareup.moshi:moshi:1.15.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:$firebase_version"))  // Firebase BoM (Bill of Materials)

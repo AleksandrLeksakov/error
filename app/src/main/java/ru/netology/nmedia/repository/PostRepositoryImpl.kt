@@ -1,95 +1,50 @@
 package ru.netology.nmedia.repository
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import ru.netology.nmedia.api.ApiService
+import ru.netology.nmedia.api.RetrofitInstance
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.processingPresponses.ApiError
+import ru.netology.nmedia.processingPresponses.ApiHelper
+import ru.netology.nmedia.processingPresponses.Result
 
+class PostRepositoryImpl(
+    private val apiHelper: ApiHelper = RetrofitInstance.apiHelper,
+    private val apiService: RetrofitInstance.PostApi = RetrofitInstance.apiService
+) : PostRepository {
 
-class PostRepositoryImpl : PostRepository {
-    override suspend fun getAll(): List<Post> = withContext(Dispatchers.IO) {
-        try {
-            val response = ApiService.service.getAll().execute()
-            if (response.isSuccessful) {
-                response.body() ?: throw RuntimeException("Response body is null")
-            } else {
-                throw RuntimeException("Server error: ${response.code()}")
-            }
-        } catch (e: Exception) {
-            throw RuntimeException("Network error", e)
+    override suspend fun getAll(): Result<List<Post>> = withContext(Dispatchers.IO) {
+        apiHelper.safeApiCall {
+            apiService.getAll()
         }
     }
 
-    override fun getAllAsync(callback: PostRepository.GetAllCallback) {
-        ApiService.service.getAll().enqueue(object : Callback<List<Post>> {
-            override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
-                if (response.isSuccessful) {
-                    callback.onSuccess(response.body() ?: emptyList())
-                } else {
-                    callback.onError(RuntimeException("Server error: ${response.code()}"))
-                }
-            }
-
-            override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                callback.onError(t)
-            }
-        })
-    }
-
-    override suspend fun likeById(id: Long): Post {
-        return try {
-            val response = ApiService.service.likeById(id).execute()
-            if (response.isSuccessful) {
-                response.body() ?: throw RuntimeException("Response body is null")
-            } else {
-                throw RuntimeException("Server error: ${response.code()}")
-            }
-        } catch (e: Exception) {
-            throw RuntimeException("Network error", e)
+    override suspend fun likeById(id: Long): Result<Post> = withContext(Dispatchers.IO) {
+        apiHelper.safeApiCall {
+            apiService.likeById(id)
         }
     }
 
-    override suspend fun save(post: Post) {
-        try {
-            val response = ApiService.service.save(post).execute()
-            if (!response.isSuccessful) {
-                throw RuntimeException("Server error: ${response.code()}")
-            }
-        } catch (e: Exception) {
-            throw RuntimeException("Network error", e)
+    override suspend fun save(post: Post): Result<Post> = withContext(Dispatchers.IO) {
+        apiHelper.safeApiCall {
+            apiService.save(post)
         }
     }
 
-    override suspend fun removeById(id: Long) {
-        try {
-            val response = ApiService.service.deleteById(id).execute()
-            if (!response.isSuccessful) {
-                throw RuntimeException("Server error: ${response.code()}")
-            }
-        } catch (e: Exception) {
-            throw RuntimeException("Network error", e)
+    override suspend fun removeById(id: Long): Result<Unit> = withContext(Dispatchers.IO) {
+        apiHelper.safeApiCall {
+            apiService.removeById(id)
         }
     }
 
-    override suspend fun shareById(id: Long) {
+    override suspend fun shareById(id: Long): Result<Unit> = withContext(Dispatchers.IO) {
         // TODO: реализовать при наличии соответствующего API
-        throw UnsupportedOperationException("Not implemented")
+        Result.Error(ApiError(code = 501, message = "Not implemented"))
     }
 
-    override suspend fun unlikeById(id: Long): Post {
-        return try {
-            val response = ApiService.service.unlikeById(id).execute()
-            if (response.isSuccessful) {
-                response.body() ?: throw RuntimeException("Response body is null")
-            } else {
-                throw RuntimeException("Server error: ${response.code()}")
-            }
-        } catch (e: Exception) {
-            throw RuntimeException("Network error", e)
+    override suspend fun unlikeById(id: Long): Result<Post> = withContext(Dispatchers.IO) {
+        apiHelper.safeApiCall {
+            apiService.unlikeById(id)
         }
     }
 }
