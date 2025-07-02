@@ -1,57 +1,63 @@
+// Плагины, используемые в проекте
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.kapt'
-    id("com.google.gms.google-services")
+    id 'com.android.application'  // Плагин для создания Android-приложения
+    id 'org.jetbrains.kotlin.android'  // Поддержка Kotlin для Android
+    id 'org.jetbrains.kotlin.kapt'  // Поддержка Kotlin Annotation Processing Tool
+    id("com.google.gms.google-services")  // Плагин для интеграции сервисов Google (Firebase)
 }
 
 android {
-    namespace "ru.netology.nmedia"
-    compileSdk 35
+    namespace "ru.netology.nmedia"  // Пространство имен приложения
+    compileSdk 35  // Версия SDK для компиляции
 
     defaultConfig {
-        applicationId "ru.netology.nmedia"
-        minSdk 23
-        targetSdk 35
-        versionCode 1
-        versionName "1.0"
+        applicationId "ru.netology.nmedia"  // Идентификатор приложения
+        minSdk 23  // Минимальная версия SDK для поддержки
+        targetSdk 35  // Целевая версия SDK
+        versionCode 1  // Версия кода приложения
+        versionName "1.0"  // Название версии приложения
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"  // Инструмент для тестирования
     }
 
+    // Настройки сборки
     buildFeatures {
-        viewBinding true
-        buildConfig true
-        //
-        //  dataBinding true
+        viewBinding true  // Включение View Binding
+        buildConfig true  // Включение генерации BuildConfig
+        // dataBinding true  // Закомментированное включение Data Binding
     }
 
+    // Типы сборки (debug и release)
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            manifestPlaceholders.usesCleartextTraffic = false
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:9999/api/slow/\"")
+            minifyEnabled false  // Отключение минификации кода
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'  // Файлы правил Proguard
+            manifestPlaceholders.usesCleartextTraffic = false  // Запрет незашифрованного трафика
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:9999/api/slow/\"")  // Базовый URL для API
         }
         debug {
-            manifestPlaceholders.usesCleartextTraffic = true
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:9999/api/slow/\"")
+            manifestPlaceholders.usesCleartextTraffic = true  // Разрешение незашифрованного трафика для отладки
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:9999/api/slow/\"")  // Базовый URL для API (тот же, что и в release)
         }
     }
-    compileOptions {
-        coreLibraryDesugaringEnabled true
 
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+    // Настройки компиляции Java
+    compileOptions {
+        coreLibraryDesugaringEnabled true  // Включение десахаризации для использования новых API на старых устройствах
+        sourceCompatibility JavaVersion.VERSION_21  // Совместимость исходного кода с Java 17
+        targetCompatibility JavaVersion.VERSION_21  // Целевая совместимость с Java 17
     }
+
+    // Настройки Kotlin
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '21'  // Целевая версия JVM для Kotlin
     }
-    buildToolsVersion '35.0.0'
+    buildToolsVersion '35.0.0'  // Версия инструментов сборки
 }
 
+// Зависимости проекта
 dependencies {
-
+    // Определение версий зависимостей
     def core_version = "1.16.0"
     def appcompat_version = "1.7.1"
     def mdc_version = "1.12.0"
@@ -69,36 +75,45 @@ dependencies {
     def retrofitgson_version = "3.0.0"
     def okhttplogging_version = "4.12.0"
 
+    // Десахаризация для поддержки новых API
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
-    implementation 'jp.wasabeef:glide-transformations:4.3.0'
-    implementation "com.github.bumptech.glide:glide:4.16.0"
-    kapt "com.github.bumptech.glide:compiler:4.16.0"
-    implementation "androidx.core:core-ktx:$core_version"
-    implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation "com.google.android.material:material:$mdc_version"
-    implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
-    implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
-    implementation "androidx.activity:activity-ktx:$activity_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:$okhttplogging_version"
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofitgson_version"
+    // Библиотеки для работы с изображениями
+    implementation 'jp.wasabeef:glide-transformations:4.3.0'  // Трансформации для Glide
+    implementation "com.github.bumptech.glide:glide:4.16.0"  // Glide - загрузка изображений
+    kapt "com.github.bumptech.glide:compiler:4.16.0"  // Обработчик аннотаций для Glide
 
-    kapt "androidx.room:room-compiler:$room_version"
+    // Основные Android-библиотеки
+    implementation "androidx.core:core-ktx:$core_version"  // Kotlin-расширения для Core
+    implementation "androidx.appcompat:appcompat:$appcompat_version"  // Совместимость с более старыми версиями Android
+    implementation "com.google.android.material:material:$mdc_version"  // Material Design Components
+    implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"  // ConstraintLayout
+    implementation "androidx.recyclerview:recyclerview:$recyclerview_version"  // RecyclerView
 
-    implementation(platform("com.google.firebase:firebase-bom:$firebase_version"))
-    implementation "com.google.firebase:firebase-messaging-ktx"
-    // implementation("com.google.firebase:firebase-analytics")
-    //noinspection GradleDependency
-    //implementation "com.google.android.gms:play-services-base:$play_services_base_version"
+    // Библиотеки для архитектуры приложения
+    implementation "androidx.activity:activity-ktx:$activity_version"  // Kotlin-расширения для Activity
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"  // ViewModel
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"  // LiveData
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"  // Навигация (фрагменты)
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"  // Навигация (UI)
 
-    testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
+    // Работа с базой данных
+    implementation "androidx.room:room-runtime:$room_version"  // Room - абстракция над SQLite
+    kapt "androidx.room:room-compiler:$room_version"  // Обработчик аннотаций для Room
 
+    // Сетевые библиотеки
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttplogging_version"  // Логирование сетевых запросов
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"  // Retrofit - HTTP-клиент
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitgson_version"  // Конвертер Gson для Retrofit
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:$firebase_version"))  // Firebase BoM (Bill of Materials)
+    implementation "com.google.firebase:firebase-messaging-ktx"  // Firebase Cloud Messaging
+    // implementation("com.google.firebase:firebase-analytics")  //  аналитика Firebase
+    // implementation "com.google.android.gms:play-services-base:$play_services_base_version"  //  сервисы Google Play
+
+    // Тестирование
+    testImplementation "junit:junit:$junit_version"  // JUnit для модульных тестов
+    androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"  // JUnit для Android-тестов
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"  // Espresso для UI-тестов
 }
