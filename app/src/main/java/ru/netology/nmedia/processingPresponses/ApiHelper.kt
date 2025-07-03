@@ -1,6 +1,6 @@
 package ru.netology.nmedia.processingPresponses
 
-import ApiError
+import ru.netology.nmedia.error.ApiError
 import com.google.firebase.appdistribution.gradle.ApiService
 import okio.IOException
 import retrofit2.HttpException
@@ -16,17 +16,19 @@ sealed class Result<out T> {
     object Loading : Result<Nothing>()
 }
 
-class ApiHelper(private val apiService: ApiService) {
+class ApiHelper(
+    private val errorParser: (Response<*>) -> ApiError
+) {
     suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): Result<T> {
         return try {
             val response = apiCall()
             if (response.isSuccessful) {
                 Result.Success(response.body()!!)
             } else {
-                Result.Error(ErrorUtils.parseError(response))
+                Result.Error(errorParser(response))
             }
         } catch (e: HttpException) {
-            Result.Error(ApiError(e))
+            Result.Error(ApiError(e.code(), e.message()))
         } catch (e: IOException) {
             Result.Error(ApiError(500, "Network error"))
         } catch (e: Exception) {

@@ -4,7 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.netology.nmedia.api.RetrofitInstance
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.processingPresponses.ApiError
+import ru.netology.nmedia.error.ApiError
+
 import ru.netology.nmedia.processingPresponses.ApiHelper
 import ru.netology.nmedia.processingPresponses.Result
 
