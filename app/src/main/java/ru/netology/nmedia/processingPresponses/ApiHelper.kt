@@ -1,7 +1,7 @@
 package ru.netology.nmedia.processingPresponses
 
 import ru.netology.nmedia.error.ApiError
-import com.google.firebase.appdistribution.gradle.ApiService
+
 import okio.IOException
 import retrofit2.HttpException
 import retrofit2.Response

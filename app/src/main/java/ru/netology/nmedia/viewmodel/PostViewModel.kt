@@ -32,10 +32,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         get() = _edited
 
     init {
-        loadPosts()
+        loadPosts(refresh = false)
     }
 
-    fun loadPosts() {
+    fun loadPosts(refresh: Boolean = true) {
         viewModelScope.launch {
             _data.value = FeedModel(loading = true)
             when (val result = repository.getAll()) {
