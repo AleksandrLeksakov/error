@@ -65,6 +65,7 @@ class PostViewHolder(
                     .circleCrop()
                     .placeholder(R.drawable.ic_loading_100dp)
                     .error(R.drawable.ic_error_100dp)
+                    .timeout(10_000)
                     .into(avatar)
             } ?: avatar.setImageResource(R.drawable.ic_launcher_background)
 
