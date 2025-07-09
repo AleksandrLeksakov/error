@@ -46,13 +46,18 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 }
                 is Result.Error -> {
-                    _data.value = FeedModel(error = Exception(result.apiError.message))
+                    _data.value = FeedModel(error = Exception(result.apiError.message),
+                        showRetry = true)
                 }
                 Result.Loading -> {
                     _data.value = FeedModel(loading = true)
                 }
             }
         }
+    }
+
+    fun retryLoad() {
+        loadPosts(refresh = true)
     }
 
     fun savePost() {
@@ -67,7 +72,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     is Result.Error -> {
                         _data.value = _data.value?.copy(
                             loading = false,
-                            error = Exception(result.apiError.message)
+                            error = Exception(result.apiError.message),
+                            showRetry = true
                         )
                     }
                     Result.Loading -> Unit // Уже обработано выше
@@ -116,7 +122,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     is Result.Error -> {
                         // Откатываем изменения при ошибке
                         loadPosts()
-                        _data.value = _data.value?.copy(error = Exception(result.apiError.message))
+                        _data.value = _data.value?.copy(error = Exception(result.apiError.message),
+                            showRetry = true)
                     }
                     Result.Loading -> Unit
                 }
@@ -140,7 +147,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 is Result.Success -> Unit // Уже обновили оптимистично
                 is Result.Error -> {
                     loadPosts() // Откатываем изменения при ошибке
-                    _data.value = _data.value?.copy(error = Exception(result.apiError.message))
+                    _data.value = _data.value?.copy(error = Exception(result.apiError.message),
+                        showRetry = true)
                 }
                 Result.Loading -> Unit
             }
@@ -152,7 +160,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             when (val result = repository.shareById(id)) {
                 is Result.Success -> loadPosts()
                 is Result.Error -> {
-                    _data.value = _data.value?.copy(error = Exception(result.apiError.message))
+                    _data.value = _data.value?.copy(error = Exception(result.apiError.message),
+                        showRetry = true)
                 }
                 Result.Loading -> Unit
             }

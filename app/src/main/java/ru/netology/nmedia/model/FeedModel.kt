@@ -4,6 +4,7 @@ import android.content.Context
 import java.io.IOException
 import ru.netology.nmedia.R
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.error.ApiError
 
 data class FeedModel(
     val posts: List<Post> = emptyList(),
@@ -11,6 +12,7 @@ data class FeedModel(
     val error: Exception? = null,
     val empty: Boolean = false,
     val refreshing: Boolean = false,
+    val showRetry: Boolean = false //  поле для отображения кнопки
 ) {
 
     val isError: Boolean = error != null

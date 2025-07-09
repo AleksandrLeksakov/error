@@ -18,6 +18,8 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
 import kotlin.apply
 
+//private val FeedFragment.swipeRefresh: Any
+
 class FeedFragment : Fragment() {
 
 
@@ -78,6 +80,17 @@ class FeedFragment : Fragment() {
             }
         })
         binding.list.adapter = adapter
+
+        // Обработчик кнопки повтора
+        binding.retryButton.setOnClickListener {
+            viewModel.retryLoad()
+        }
+
+        // Обработчик обновления свайпом
+       // binding.swipeRefresh.setOnRefreshListener {
+      //      viewModel.loadPosts(refresh = true)
+      //  }
+
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
 
@@ -95,3 +108,4 @@ class FeedFragment : Fragment() {
         return binding.root
     }
 }
+
