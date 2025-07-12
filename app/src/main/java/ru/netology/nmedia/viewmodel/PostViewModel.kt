@@ -98,38 +98,48 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun likeById(id: Long) {
         viewModelScope.launch {
+            val currentPosts = _data.value?.posts ?: return@launch
+            val post = currentPosts.find { it.id == id } ?: return@launch
+
+            // Оптимистичное обновление
+            val newPosts = currentPosts.map {
+                if (it.id == id) it.copy(
+                    likedByMe = !it.likedByMe,
+                    likes = if (it.likedByMe) it.likes - 1 else it.likes + 1
+                ) else it
+            }
+            _data.value = _data.value?.copy(posts = newPosts)
+
+            // Реальный запрос
             try {
-                // Оптимистичное обновление
-                _data.value?.posts?.let { currentPosts ->
-                    val post = currentPosts.find { it.id == id } ?: return@launch
-                    val newPosts = currentPosts.map {
-                        if (it.id == id) {
-                            it.copy(
-                                likedByMe = !it.likedByMe,
-                                likes = if (it.likedByMe) it.likes - 1 else it.likes + 1
-                            )
-                        } else it
-                    }
-                    _data.value = _data.value?.copy(posts = newPosts)
+                val result = if (post.likedByMe) {
+                    repository.unlikeById(id)
+                } else {
+                    repository.likeById(id)
                 }
 
-                // Реальный запрос
-                when (val result = repository.likeById(id)) {
+                when (result) {
                     is Result.Success -> {
                         // Обновляем данные с сервера
                         loadPosts()
                     }
                     is Result.Error -> {
-                        // Откатываем изменения при ошибке
-                        loadPosts()
-                        _data.value = _data.value?.copy(error = Exception(result.apiError.message),
-                            showRetry = true)
+                        // Откатываем при ошибке
+                        _data.value = _data.value?.copy(
+                            posts = currentPosts,
+                            error = Exception( result.apiError.message),
+                            showRetry = true
+                        )
                     }
-                    Result.Loading -> Unit
+
+                    Result.Loading -> TODO()
                 }
             } catch (e: Exception) {
-                _data.value = _data.value?.copy(error = e)
-                loadPosts()
+                _data.value = _data.value?.copy(
+                    posts = currentPosts,
+                    error = e,
+                    showRetry = true
+                )
             }
         }
     }
