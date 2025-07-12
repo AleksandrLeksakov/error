@@ -119,16 +119,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 when (result) {
-                    is Result.Success -> {
-                        // Обновляем данные с сервера
-                        loadPosts()
-                    }
+                    is Result.Success -> Unit
                     is Result.Error -> {
                         // Откатываем при ошибке
                         _data.value = _data.value?.copy(
                             posts = currentPosts,
-                            error = Exception( result.apiError.message),
-                            showRetry = true
+                          //  error = Exception( result.apiError.message),
+                          //  showRetry = true
                         )
                     }
 
